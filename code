@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
+
+int channel = 0;  
+
+int collisionOccurs() {
+    return rand() % 5 == 0;
+}
+
+void sendFrame(char sender[]) {
+
+    printf("\n%s wants to send a frame.\n", sender);
+
+    
+    if (channel == 1) {
+        printf("%s: Channel is BUSY. Waiting...\n", sender);
+        sleep(1); 
+    }
+
+    
+    printf("%s: Channel is FREE. Starting transmission...\n", sender);
+    channel = 1; 
+
+    
+    if (collisionOccurs()) {
+        printf("%s: COLLISION detected!\n", sender);
+
+        
+        printf("%s: Sending JAM signal...\n", sender);
+
+        
+        channel = 0;
+
+      
+        int waitTime = rand() % 3;  
+        printf("%s: Backing off for %d seconds.\n", sender, waitTime);
+        sleep(waitTime);
+
+        
+        sendFrame(sender);
+    }
+    else {
+        printf("%s: Transmission SUCCESSFUL.\n", sender);
+        channel = 0; 
+    }
+}
+
+int main() {
+
+    srand(time(NULL));
+
+    
+    sendFrame("Node A");
+    sendFrame("Node B");
+
+    return 0;
+}
